@@ -1,0 +1,101 @@
+service:
+  name: XRides
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+
+plugins:
+  - serverless-webpack
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
+
+provider:
+  name: aws
+
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+
+  region: ${opt:region, 'ap-south-1'}
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    RIDES_TABLE: Rides-${self:provider.stage}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RIDES_TABLE}
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: XRides API
+        description: Serverless application for cab service
+    models:
+      - name: RideRequest
+        contentType: application/json
+        schema: ${file(models/create-ride-request.json)}
+        
+functions:
+  GetAll:
+    handler: src/lambda/http/getAll.handler
+    events:
+      - http:
+          method: get
+          path: rides
+          cors: true
+
+  GetCancelled:
+    handler: src/lambda/http/getCancelled.handler
+    events:
+      - http:
+          method: get
+          path: cancelled
+          cors: true
+  
+  CreateRide:
+    handler: src/lambda/http/createRide.handler
+    events:
+      - http:
+          method: post
+          path: rides
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new ride
+            description: Create a new ride and validate that it has the necessary information
+            requestModels:
+              'application/json': RideRequest
+
+resources:
+  Resources:
+    RidesDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.RIDES_TABLE}
+          
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false

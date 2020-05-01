@@ -1,0 +1,77 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "group",
+    "type": "object",
+    "properties": {
+      "user_id": {
+        "type": "string"
+      },
+      "vehicle_model_id": {
+        "type": "string"
+      },
+      "package_id": {
+        "type": "string"
+      },
+      "travel_type_id": {
+        "type": "string"
+      },
+      "from_area_id": {
+        "type": "string"
+      },
+      "to_area_id": {
+        "type": "string"
+      },
+      "from_city_id": {
+        "type": "string"
+      },
+      "to_city_id": {
+        "type": "string"
+      },
+      "from_date": {
+        "type": "string"
+      },
+      "to_date": {
+        "type": "string"
+      },
+      "online_book": {
+        "type": "string"
+      },
+      "mobile_site_booking": {
+        "type": "string"
+      },
+      "booking_created": {
+        "type": "string"
+      },
+      "from_lat": {
+        "type": "string"
+      },
+      "from_long": {
+        "type": "string"
+      },
+      "to_lat": {
+        "type": "string"
+      },
+      "to_long": {
+        "type": "string"
+      },
+      "Car_Cancellation": {
+        "type": "string"
+      }
+    },
+    "required": [
+        "vehicle_model_id",
+        "travel_type_id",
+        "from_city_id",
+        "from_date",
+        "to_date",
+        "online_book",
+        "mobile_site_booking",
+        "booking_created",
+        "from_lat",
+        "from_long",
+        "to_lat",
+        "to_long",
+        "Car_Cancellation"
+    ],
+    "additionalProperties": false
+  }
